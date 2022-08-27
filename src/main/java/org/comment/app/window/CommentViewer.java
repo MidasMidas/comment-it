@@ -1,4 +1,8 @@
 package org.comment.app.window;
 
-public class CommentViewer {
+
+import java.awt.*;
+
+public class CommentViewer extends TextArea {
+
 }
