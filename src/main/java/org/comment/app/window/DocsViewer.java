@@ -3,6 +3,9 @@ package org.comment.app.window;
 import lombok.Data;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import java.awt.*;
 
 @Data
 public class DocsViewer extends JScrollPane {
@@ -12,7 +15,7 @@ public class DocsViewer extends JScrollPane {
     public DocsViewer() {
         super();
 
-        docsPane.setSize(600, 1000);
+        docsPane.setMinimumSize(new Dimension(600, 600));
         docsPane.setVisible(true);
         this.setViewportView(docsPane);
 
@@ -22,5 +25,9 @@ public class DocsViewer extends JScrollPane {
 
     public void setText(String text) {
         this.getDocsPane().setText(text);
+    }
+    public void appendText(String text) throws BadLocationException {
+        Document document = this.getDocsPane().getDocument();
+        document.insertString(document.getLength(),text,null);
     }
 }

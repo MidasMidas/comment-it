@@ -302,12 +302,13 @@ public class TextLineNumber extends JPanel
     {
         Element root = component.getDocument().getDefaultRootElement();
         int index = root.getElementIndex( rowStartOffset );
-        Element line = root.getElement( index );
-
-        if (line.getStartOffset() == rowStartOffset)
-            return String.valueOf(index + 1);
-        else
-            return "";
+        return String.valueOf(index + 1);
+//        Element line = root.getElement( index );
+//
+//        if (line.getStartOffset() == rowStartOffset)
+//            return String.valueOf(index + 1);
+//        else
+//            return "";
     }
 
     /*

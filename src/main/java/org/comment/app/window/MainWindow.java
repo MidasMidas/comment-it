@@ -1,11 +1,17 @@
 package org.comment.app.window;
 
-import javax.swing.*;
-import java.awt.*;
+import lombok.Data;
 
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
+import java.io.*;
+
+@Data
 public final class MainWindow extends JFrame {
 
-//    private final String appName;
+    //    private final String appName;
+    private DocsViewer docsViewer;
 
     public MainWindow(String appName) {
         super(appName);
@@ -13,16 +19,8 @@ public final class MainWindow extends JFrame {
     }
 
     public void init() {
-        String testString = " sflkdjasfhashfshfsfds\n" +
-                " sdhfjashfiashfuisdafsadfsdf\n" +
-                " \n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "shdfjashfjksadhfkjhdsjkfhjksadhfjksadhjkfhsdadfgdgdgdgdjkfhsjdkahfksadfsafsafsfsfsdfasf\n" +
-                "sfsahdfjhasjfhasjhfjsahdjkfhsajkdfsdfsf\n\n";
-        this.setLayout(new FlowLayout());
+
+//        this.setLayout(new FlowLayout());
         Container contentPane = this.getContentPane();
 //        DocsPanel docsPane = new DocsPanel();
 //        docsPane.setText(testString);
@@ -33,24 +31,34 @@ public final class MainWindow extends JFrame {
 //        docsViewer.setViewportView(docsPane);
 //        TextLineNumber textlineNumber = new TextLineNumber(docsPane);
 //        docsViewer.setRowHeaderView(textlineNumber);
-        DocsViewer docsViewer = new DocsViewer();
-        docsViewer.setText(testString);
-        contentPane.add(docsViewer);
-        Button button = new Button();
-        button.setLabel("check");
-        button.setSize(40, 40);
-        button.setVisible(true);
+        docsViewer = new DocsViewer();
+        docsViewer.setSize(new Dimension(600,600));
+        this.add(docsViewer,BorderLayout.CENTER);
+//        contentPane.add(docsViewer);
 
-        contentPane.add(button);
+
+        Button checkButton = new Button();
+        checkButton.setLabel("check");
+        checkButton.setSize(40, 40);
+        checkButton.setVisible(true);
+
+//        contentPane.add(checkButton);
+        this.add(checkButton,BorderLayout.SOUTH);
+        Button openButton = new Button();
+        openButton.setLabel("open");
+        openButton.setSize(40, 40);
+        openButton.setVisible(true);
+        this.add(openButton,BorderLayout.NORTH);
+//        contentPane.add(openButton);
 
         CommentViewer commentViewer = new CommentViewer();
         commentViewer.setSize(600, 600);
         commentViewer.setVisible(true);
         commentViewer.setEditable(false);
-        contentPane.add(commentViewer);
+//        contentPane.add(commentViewer);
+        this.add(commentViewer,BorderLayout.EAST);
 
-
-        button.addActionListener(e -> {
+        checkButton.addActionListener(e -> {
             int selectionStart = docsViewer.getDocsPane().getSelectionStart();
             int selectionEnd = docsViewer.getDocsPane().getSelectionEnd();
             int caretPosition = docsViewer.getDocsPane().getCaretPosition();
@@ -73,6 +81,24 @@ public final class MainWindow extends JFrame {
                     caretPosition
             ));
             commentViewer.append(String.format("rowNum:%d", rowNum));
+        });
+        openButton.addActionListener(e -> {
+            FileDialog chooseFile = new FileDialog(this, "choose file", FileDialog.LOAD);
+            chooseFile.setVisible(true);
+            if (null != chooseFile.getDirectory()) {
+                docsViewer.setText("");
+                String filePath = chooseFile.getDirectory() + chooseFile.getFile();
+                String line = null;
+                try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                    while ((line = reader.readLine()) != null) {
+                        docsViewer.appendText(line);
+                        docsViewer.appendText("\n");
+                    }
+                } catch (IOException | BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+
+            }
         });
     }
 
