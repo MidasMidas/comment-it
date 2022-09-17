@@ -1,9 +1,15 @@
 package org.comment.app.docs;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
 import java.util.Objects;
 
+@Data
 public class Block {
+    @JsonProperty("start_index")
     private Indicator startIndex;
+    @JsonProperty("end_index")
     private Indicator endIndex;
 
     public boolean isContain(Indicator target){

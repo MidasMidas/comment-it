@@ -1,13 +1,22 @@
 package org.comment.app.docs;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+import java.util.List;
+
+@Data
 public class CommentFile {
+
+    @JsonProperty("version")
     private String version;
+    @JsonProperty("create_time")
     private String createTime;
+
+    @JsonProperty("last_update_time")
     private String lastUpdateTime;
 
-    private Map<Block,Comment> commentMap=new HashMap<>();
+    @JsonProperty("comment_list")
+    private List<Comment> commentList;
 
 }

@@ -1,8 +1,14 @@
 package org.comment.app.docs;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+@Data
 public class Indicator {
+    @JsonProperty("line")
     private int line;
+    @JsonProperty("letter")
     private int letter;
 
     public boolean isAfter(Indicator indicator){
@@ -15,19 +21,5 @@ public class Indicator {
         return false;
     }
 
-    public int getLine() {
-        return line;
-    }
 
-    public void setLine(int line) {
-        this.line = line;
-    }
-
-    public int getLetter() {
-        return letter;
-    }
-
-    public void setLetter(int letter) {
-        this.letter = letter;
-    }
 }

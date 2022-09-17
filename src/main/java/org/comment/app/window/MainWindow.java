@@ -1,6 +1,8 @@
 package org.comment.app.window;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import org.comment.app.docs.CommentFile;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -12,6 +14,7 @@ public final class MainWindow extends JFrame {
 
     //    private final String appName;
     private DocsViewer docsViewer;
+    private CommentFile commentFile;
 
     public MainWindow(String appName) {
         super(appName);
@@ -97,7 +100,13 @@ public final class MainWindow extends JFrame {
                 } catch (IOException | BadLocationException ex) {
                     ex.printStackTrace();
                 }
-
+                String commentFilePath=filePath+".cmt";
+                ObjectMapper mapper= new ObjectMapper();
+                try {
+                    commentFile  = mapper.readValue(new File(commentFilePath), CommentFile.class);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }
