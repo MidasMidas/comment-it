@@ -2,12 +2,19 @@ package org.comment.app.window;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import org.comment.app.docs.Comment;
 import org.comment.app.docs.CommentFile;
+import org.comment.app.dto.CommentDTO;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.io.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 @Data
 public final class MainWindow extends JFrame {
@@ -58,9 +65,25 @@ public final class MainWindow extends JFrame {
         commentViewer.setSize(600, 600);
         commentViewer.setVisible(true);
         commentViewer.setEditable(false);
+        commentViewer.setLineWrap(true);
 //        contentPane.add(commentViewer);
         this.add(commentViewer,BorderLayout.EAST);
 
+        docsViewer.getDocsPane().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int caretPosition = docsViewer.getDocsPane().getCaretPosition();
+                CommentDTO comments=new CommentDTO();
+                for(Comment cmt: commentFile.getCommentList()){
+                    if(caretPosition>cmt.getRange().getFrom()&&caretPosition<cmt.getRange().getTo()){
+                        comments.addComment(cmt);
+                    }
+                }
+
+                commentViewer.setText(comments.getCommentString()+"\n");
+            }
+        });
         checkButton.addActionListener(e -> {
             int selectionStart = docsViewer.getDocsPane().getSelectionStart();
             int selectionEnd = docsViewer.getDocsPane().getSelectionEnd();
@@ -73,11 +96,17 @@ public final class MainWindow extends JFrame {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            CommentDTO comments=new CommentDTO();
+            for(Comment cmt: commentFile.getCommentList()){
+                if(caretPosition>cmt.getRange().getFrom()&&caretPosition<cmt.getRange().getTo()){
+                    comments.addComment(cmt);
+                }
+            }
 
-            commentViewer.setText(String.format("clicked, selectionStart:%d," +
+            commentViewer.setText(comments.getCommentString()+"\n");
+            commentViewer.append(String.format("clicked, selectionStart:%d," +
                             "selectionEnd: %d " +
                             "caretPosition: %d " +
-
                             "\n",
                     selectionStart,
                     selectionEnd,
@@ -91,7 +120,7 @@ public final class MainWindow extends JFrame {
             if (null != chooseFile.getDirectory()) {
                 docsViewer.setText("");
                 String filePath = chooseFile.getDirectory() + chooseFile.getFile();
-                String line = null;
+                String line;
                 try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
                     while ((line = reader.readLine()) != null) {
                         docsViewer.appendText(line);

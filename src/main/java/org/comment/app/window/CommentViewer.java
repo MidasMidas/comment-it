@@ -1,9 +1,9 @@
 package org.comment.app.window;
 
 
-import java.awt.*;
+import javax.swing.*;
 
-public class CommentViewer extends TextArea {
+public class CommentViewer extends JTextArea {
 
 
 
