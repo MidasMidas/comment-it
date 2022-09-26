@@ -23,6 +23,9 @@ public final class MainWindow extends JFrame {
     private DocsViewer docsViewer;
     private CommentFile commentFile;
 
+    private String orgFile;
+    private String cmtFile;
+
     public MainWindow(String appName) {
         super(appName);
 //        this.appName = appName;
@@ -42,8 +45,8 @@ public final class MainWindow extends JFrame {
 //        TextLineNumber textlineNumber = new TextLineNumber(docsPane);
 //        docsViewer.setRowHeaderView(textlineNumber);
         docsViewer = new DocsViewer();
-        docsViewer.setSize(new Dimension(600,600));
-        this.add(docsViewer,BorderLayout.CENTER);
+        docsViewer.setSize(new Dimension(600, 600));
+        this.add(docsViewer, BorderLayout.CENTER);
 //        contentPane.add(docsViewer);
 
 
@@ -53,12 +56,12 @@ public final class MainWindow extends JFrame {
         checkButton.setVisible(true);
 
 //        contentPane.add(checkButton);
-        this.add(checkButton,BorderLayout.SOUTH);
+        this.add(checkButton, BorderLayout.SOUTH);
         Button openButton = new Button();
         openButton.setLabel("open");
         openButton.setSize(40, 40);
         openButton.setVisible(true);
-        this.add(openButton,BorderLayout.NORTH);
+        this.add(openButton, BorderLayout.NORTH);
 //        contentPane.add(openButton);
 
         CommentViewer commentViewer = new CommentViewer();
@@ -67,21 +70,21 @@ public final class MainWindow extends JFrame {
         commentViewer.setEditable(false);
         commentViewer.setLineWrap(true);
 //        contentPane.add(commentViewer);
-        this.add(commentViewer,BorderLayout.EAST);
+        this.add(commentViewer, BorderLayout.EAST);
 
         docsViewer.getDocsPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 int caretPosition = docsViewer.getDocsPane().getCaretPosition();
-                CommentDTO comments=new CommentDTO();
-                for(Comment cmt: commentFile.getCommentList()){
-                    if(caretPosition>cmt.getRange().getFrom()&&caretPosition<cmt.getRange().getTo()){
+                CommentDTO comments = new CommentDTO();
+                for (Comment cmt : commentFile.getCommentList()) {
+                    if (caretPosition > cmt.getRange().getFrom() && caretPosition < cmt.getRange().getTo()) {
                         comments.addComment(cmt);
                     }
                 }
 
-                commentViewer.setText(comments.getCommentString()+"\n");
+                commentViewer.setText(comments.getCommentString() + "\n");
             }
         });
         checkButton.addActionListener(e -> {
@@ -96,14 +99,14 @@ public final class MainWindow extends JFrame {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            CommentDTO comments=new CommentDTO();
-            for(Comment cmt: commentFile.getCommentList()){
-                if(caretPosition>cmt.getRange().getFrom()&&caretPosition<cmt.getRange().getTo()){
+            CommentDTO comments = new CommentDTO();
+            for (Comment cmt : commentFile.getCommentList()) {
+                if (caretPosition > cmt.getRange().getFrom() && caretPosition < cmt.getRange().getTo()) {
                     comments.addComment(cmt);
                 }
             }
 
-            commentViewer.setText(comments.getCommentString()+"\n");
+            commentViewer.setText(comments.getCommentString() + "\n");
             commentViewer.append(String.format("clicked, selectionStart:%d," +
                             "selectionEnd: %d " +
                             "caretPosition: %d " +
@@ -120,6 +123,7 @@ public final class MainWindow extends JFrame {
             if (null != chooseFile.getDirectory()) {
                 docsViewer.setText("");
                 String filePath = chooseFile.getDirectory() + chooseFile.getFile();
+                orgFile = filePath;
                 String line;
                 try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
                     while ((line = reader.readLine()) != null) {
@@ -129,10 +133,11 @@ public final class MainWindow extends JFrame {
                 } catch (IOException | BadLocationException ex) {
                     ex.printStackTrace();
                 }
-                String commentFilePath=filePath+".cmt";
-                ObjectMapper mapper= new ObjectMapper();
+                String commentFilePath = filePath + ".cmt";
+                cmtFile = commentFilePath;
+                ObjectMapper mapper = new ObjectMapper();
                 try {
-                    commentFile  = mapper.readValue(new File(commentFilePath), CommentFile.class);
+                    commentFile = mapper.readValue(new File(commentFilePath), CommentFile.class);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
