@@ -21,7 +21,9 @@ public final class MainWindow extends JFrame {
 
     //    private final String appName;
     private DocsViewer docsViewer;
-    private CommentFile commentFile;
+    private CommentFile commentFile = new CommentFile();
+
+    private JLabel cursorPosition;
 
     private String orgFile;
     private String cmtFile;
@@ -50,28 +52,42 @@ public final class MainWindow extends JFrame {
 //        contentPane.add(docsViewer);
 
 
-        Button checkButton = new Button();
-        checkButton.setLabel("check");
-        checkButton.setSize(40, 40);
-        checkButton.setVisible(true);
+        Button commentButton = new Button();
+        commentButton.setLabel("comment");
+        commentButton.setSize(40, 40);
+        commentButton.setVisible(true);
 
-//        contentPane.add(checkButton);
-        this.add(checkButton, BorderLayout.SOUTH);
+
         Button openButton = new Button();
         openButton.setLabel("open");
         openButton.setSize(40, 40);
         openButton.setVisible(true);
-        this.add(openButton, BorderLayout.NORTH);
-//        contentPane.add(openButton);
+
+        Button saveButton = new Button();
+        saveButton.setLabel("save");
+        saveButton.setSize(40, 40);
+        saveButton.setVisible(true);
 
         CommentViewer commentViewer = new CommentViewer();
         commentViewer.setSize(600, 600);
         commentViewer.setVisible(true);
         commentViewer.setEditable(false);
         commentViewer.setLineWrap(true);
-//        contentPane.add(commentViewer);
         this.add(commentViewer, BorderLayout.EAST);
 
+        cursorPosition = new JLabel();
+        cursorPosition.setText("0");
+        cursorPosition.setVisible(true);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setVisible(true);
+        buttonPanel.add(cursorPosition);
+        buttonPanel.add(openButton);
+        buttonPanel.add(commentButton);
+        buttonPanel.add(saveButton);
+
+        this.add(buttonPanel, BorderLayout.SOUTH);
         docsViewer.getDocsPane().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -84,21 +100,16 @@ public final class MainWindow extends JFrame {
                     }
                 }
 
+                cursorPosition.setText(String.valueOf(caretPosition));
                 commentViewer.setText(comments.getCommentString() + "\n");
             }
         });
-        checkButton.addActionListener(e -> {
+        commentButton.addActionListener(e -> {
             int selectionStart = docsViewer.getDocsPane().getSelectionStart();
             int selectionEnd = docsViewer.getDocsPane().getSelectionEnd();
             int caretPosition = docsViewer.getDocsPane().getCaretPosition();
+            new CommentDialog(commentFile, selectionStart, selectionEnd);
 
-
-            int rowNum = 0;
-            try {
-                rowNum = docsViewer.getDocsPane().getCursorLineNumber();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
             CommentDTO comments = new CommentDTO();
             for (Comment cmt : commentFile.getCommentList()) {
                 if (caretPosition > cmt.getRange().getFrom() && caretPosition < cmt.getRange().getTo()) {
@@ -115,7 +126,6 @@ public final class MainWindow extends JFrame {
                     selectionEnd,
                     caretPosition
             ));
-            commentViewer.append(String.format("rowNum:%d", rowNum));
         });
         openButton.addActionListener(e -> {
             FileDialog chooseFile = new FileDialog(this, "choose file", FileDialog.LOAD);
@@ -141,6 +151,14 @@ public final class MainWindow extends JFrame {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
+            }
+        });
+        saveButton.addActionListener(e -> {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                mapper.writeValue(new File(cmtFile), commentFile);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
     }

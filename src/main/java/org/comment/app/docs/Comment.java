@@ -8,8 +8,8 @@ public class Comment {
 
     @JsonProperty("id")
     private int id;
-    @JsonProperty("block")
-    private Block block;
+//    @JsonProperty("block")
+//    private Block block;
     @JsonProperty("range")
     private Range range;
     @JsonProperty("author")

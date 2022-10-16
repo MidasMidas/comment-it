@@ -7,6 +7,7 @@ import org.comment.app.util.AppUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,7 +22,7 @@ public class CommentFile {
     private String lastUpdateTime;
 
     @JsonProperty("comment_list")
-    private List<Comment> commentList;
+    private List<Comment> commentList =new ArrayList<>();
 
 
     public void addComment(int start, int end, String comment) {
@@ -34,6 +35,7 @@ public class CommentFile {
         String updateTime = AppUtil.getCurrentTimeString();
         Comment newCMT = new Comment();
         newCMT.setId(maxId + 1);
+        newCMT.setRange(new Range());
         newCMT.getRange().setFrom(start);
         newCMT.getRange().setTo(end);
         newCMT.setComment(comment);

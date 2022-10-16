@@ -2,7 +2,9 @@ package org.comment.app.util;
 
 import org.comment.app.constant.Constant;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AppUtil {
@@ -16,7 +18,7 @@ public class AppUtil {
     }
 
     public static String getCurrentTimeString() {
-        return LocalDate.now().format(DateTimeFormatter.ofPattern(Constant.TIME_FORMAT));
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(Constant.TIME_FORMAT));
     }
 
 }
